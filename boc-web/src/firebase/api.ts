@@ -1,0 +1,1 @@
+//Put the all firebase fucntions here, including auth fucntions
