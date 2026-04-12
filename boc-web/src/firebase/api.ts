@@ -11,25 +11,11 @@ import {
   Timestamp
 } from "firebase/firestore";
 import { db } from "./config";
-
-export interface Task {
-  id?: string;
-  title: string;
-  assignees: string[];
-  status: "Todo" | "In Progress" | "Done";
-  priority: "Low" | "Medium" | "High";
-  dueDate: string;
-  createdAt?: Timestamp;
-}
-
-export interface TeamMember {
-  id?: string;
-  name: string;
-  createdAt?: Timestamp;
-}
+import { Task, TeamMember, Meeting } from "@/types";
 
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
+const MEETINGS_COLLECTION = "meetings";
 
 // --- Tasks ---
 
@@ -84,4 +70,37 @@ export const addTeamMember = async (name: string) => {
 export const deleteTeamMember = async (id: string) => {
   const teamRef = doc(db, TEAM_MEMBERS_COLLECTION, id);
   return await deleteDoc(teamRef);
+};
+
+// --- Meetings / Attendance ---
+
+export const getMeetings = async (): Promise<Meeting[]> => {
+  const meetingsRef = collection(db, MEETINGS_COLLECTION);
+  const q = query(meetingsRef, orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  } as Meeting));
+};
+
+export const addMeeting = async (title: string, description: string, date: string) => {
+  const meetingsRef = collection(db, MEETINGS_COLLECTION);
+  return await addDoc(meetingsRef, {
+    title,
+    description,
+    date,
+    presentMemberIds: [],
+    createdAt: serverTimestamp()
+  });
+};
+
+export const updateMeetingAttendance = async (meetingId: string, presentMemberIds: string[]) => {
+  const meetingRef = doc(db, MEETINGS_COLLECTION, meetingId);
+  return await updateDoc(meetingRef, { presentMemberIds });
+};
+
+export const deleteMeeting = async (id: string) => {
+  const meetingRef = doc(db, MEETINGS_COLLECTION, id);
+  return await deleteDoc(meetingRef);
 };

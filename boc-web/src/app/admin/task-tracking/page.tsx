@@ -26,12 +26,11 @@ import {
   addTask, 
   updateTask, 
   deleteTask, 
-  Task,
   getTeamMembers,
   addTeamMember,
-  deleteTeamMember,
-  TeamMember
+  deleteTeamMember
 } from '@/firebase/api';
+import { Task, TeamMember } from '@/types';
 import { exportTasksToExcel } from '@/utils/excel-export';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';

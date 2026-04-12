@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx';
 import { format } from 'date-fns';
-import { Task } from '@/firebase/api';
+import { Task, Meeting, TeamMember } from '@/types';
 
 export const exportTasksToExcel = (tasks: Task[]) => {
   // Map tasks to a format suitable for Excel
@@ -33,6 +33,44 @@ export const exportTasksToExcel = (tasks: Task[]) => {
 
   // Generate filename with timestamp
   const fileName = `BOC_Tasks_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
+
+  // Write file
+  XLSX.writeFile(workbook, fileName);
+};
+
+export const exportAttendanceToExcel = (meetings: Meeting[], teamMembers: TeamMember[]) => {
+  // Create a matrix: Rows = Team Members, Columns = Meetings
+  const excelData = teamMembers.map(member => {
+    const row: any = {
+      'Member Name': member.name,
+    };
+
+    // Add a column for each meeting
+    meetings.forEach(meeting => {
+      const isPresent = meeting.presentMemberIds.includes(member.id!);
+      const header = `${meeting.title} (${meeting.date})`;
+      row[header] = isPresent ? 'PRESENT' : 'ABSENT';
+    });
+
+    return row;
+  });
+
+  // Create worksheet
+  const worksheet = XLSX.utils.json_to_sheet(excelData);
+  
+  // Create workbook
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance Report");
+
+  // Dynamic column widths
+  const wscols = [{ wch: 25 }]; // Member Name
+  meetings.forEach(() => {
+    wscols.push({ wch: 25 });
+  });
+  worksheet['!cols'] = wscols;
+
+  // Generate filename with timestamp
+  const fileName = `BOC_Attendance_${format(new Date(), 'yyyyMMdd_HHmm')}.xlsx`;
 
   // Write file
   XLSX.writeFile(workbook, fileName);
