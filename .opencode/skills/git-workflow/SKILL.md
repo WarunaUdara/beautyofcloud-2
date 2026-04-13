@@ -155,6 +155,8 @@ git push origin main
 
 Use environment variables for all sensitive values. See `src/firebase/config.ts` for the pattern.
 
+> **Note**: `.env.example` (the template with empty values) IS safe to commit. Since `.env*` is gitignored by default, force-add it: `git add -f boc-web/.env.example`
+
 ---
 
 ## Conflict Resolution Priority
