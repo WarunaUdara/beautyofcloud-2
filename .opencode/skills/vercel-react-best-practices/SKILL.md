@@ -9,7 +9,7 @@ metadata:
 
 # Vercel React Best Practices
 
-Comprehensive performance optimization guide for React and Next.js applications, maintained by Vercel. Contains 69 rules across 8 categories.
+Comprehensive performance optimization guide for React and Next.js applications, maintained by Vercel. Contains 46 rules across 8 categories.
 
 ## When to Apply
 

@@ -1,6 +1,7 @@
 ---
 name: frontend-design
 description: Create distinctive, production-grade frontend interfaces with high design quality. Use when building web components, pages, artifacts, or applications.
+compatibility: opencode
 license: MIT
 ---
 
