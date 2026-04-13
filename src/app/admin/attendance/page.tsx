@@ -9,7 +9,6 @@ import {
   Trash2, 
   CheckCircle2, 
   Circle,
-  AlertCircle,
   ChevronDown,
   ChevronUp,
   X,

@@ -40,8 +40,11 @@ export const exportTasksToExcel = (tasks: Task[]) => {
 
 export const exportAttendanceToExcel = (meetings: Meeting[], teamMembers: TeamMember[]) => {
   // Create a matrix: Rows = Team Members, Columns = Meetings
+  interface AttendanceRow {
+    [key: string]: string;
+  }
   const excelData = teamMembers.map(member => {
-    const row: any = {
+    const row: AttendanceRow = {
       'Member Name': member.name,
     };
 

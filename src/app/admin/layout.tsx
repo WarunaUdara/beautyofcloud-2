@@ -1,6 +1,5 @@
 "use client";
 
-import { AuthProvider } from "@/context/AuthContext";
 import { DataProvider } from "@/context/DataContext";
 
 /**

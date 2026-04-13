@@ -6,18 +6,15 @@ import {
   Plus, 
   Trash2, 
   CheckCircle2, 
-  Clock, 
-  AlertCircle,
+  Clock,
   Users,
   Calendar,
-  Filter,
   Search,
-  LayoutGrid,
   UserPlus,
   UserCheck,
   X,
   Edit2,
-  ChevronDown
+  AlertCircle
 } from 'lucide-react';
 import { GlassCard } from '@/components/ui/GlassCard';
 import { ExportButton } from '@/components/ui/ExportButton';
@@ -39,6 +36,14 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+interface TaskFormState {
+  title: string;
+  assignees: string[];
+  status: Task['status'];
+  priority: Task['priority'];
+  dueDate: string;
+}
+
 export default function TaskTrackingPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
@@ -50,11 +55,11 @@ export default function TaskTrackingPage() {
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
   // New task form state
-  const [newTask, setNewTask] = useState({
+  const [newTask, setNewTask] = useState<TaskFormState>({
     title: "",
     assignees: [] as string[],
-    status: "Todo" as const,
-    priority: "Medium" as const,
+    status: "Todo",
+    priority: "Medium",
     dueDate: new Date().toISOString().split('T')[0]
   });
 
@@ -108,10 +113,10 @@ export default function TaskTrackingPage() {
     }
   };
 
-  const handleEditTask = (task: any) => {
+  const handleEditTask = (task: Task) => {
     setNewTask({
       title: task.title,
-      assignees: task.assignees || (task.assignee ? [task.assignee] : []),
+      assignees: task.assignees || [],
       status: task.status,
       priority: task.priority,
       dueDate: task.dueDate
@@ -149,7 +154,8 @@ export default function TaskTrackingPage() {
 
   const handleUpdateStatus = async (id: string, currentStatus: string) => {
     const statuses: Task['status'][] = ["Todo", "In Progress", "Done"];
-    const nextStatus = statuses[(statuses.indexOf(currentStatus as any) + 1) % statuses.length];
+    const currentStatusIndex = statuses.indexOf(currentStatus as Task['status']);
+    const nextStatus = statuses[(currentStatusIndex + 1) % statuses.length];
     
     try {
       await updateTask(id, { status: nextStatus });
@@ -191,8 +197,7 @@ export default function TaskTrackingPage() {
 
   const filteredTasks = tasks.filter(task => 
     task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (task.assignees && task.assignees.some(a => a.toLowerCase().includes(searchQuery.toLowerCase()))) ||
-    (task as any).assignee?.toLowerCase().includes(searchQuery.toLowerCase())
+    (task.assignees && task.assignees.some(a => a.toLowerCase().includes(searchQuery.toLowerCase())))
   );
 
   return (
@@ -218,7 +223,7 @@ export default function TaskTrackingPage() {
               transition={{ delay: 0.1 }}
               className="text-slate-500 text-lg"
             >
-              Manage your team's productivity with style.
+              Manage your team&apos;s productivity with style.
             </motion.p>
           </div>
 
@@ -331,7 +336,7 @@ export default function TaskTrackingPage() {
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Priority</label>
                       <select 
                         value={newTask.priority}
-                        onChange={e => setNewTask({...newTask, priority: e.target.value as any})}
+                        onChange={e => setNewTask({...newTask, priority: e.target.value as Task['priority']})}
                         className="w-full bg-slate-950/50 border border-slate-800 rounded-lg p-3 outline-none focus:border-cyan-500/50 appearance-none text-white"
                       >
                         <option value="Low" className="bg-slate-900">Low</option>
@@ -343,7 +348,7 @@ export default function TaskTrackingPage() {
                       <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Status</label>
                       <select 
                         value={newTask.status}
-                        onChange={e => setNewTask({...newTask, status: e.target.value as any})}
+                        onChange={e => setNewTask({...newTask, status: e.target.value as Task['status']})}
                         className="w-full bg-slate-950/50 border border-slate-800 rounded-lg p-3 outline-none focus:border-cyan-500/50 appearance-none text-white"
                       >
                         <option value="Todo" className="bg-slate-900">Todo</option>
@@ -444,7 +449,7 @@ export default function TaskTrackingPage() {
                             <div className="flex items-center gap-2">
                               <Users size={14} className="text-indigo-400" />
                               <div className="flex flex-wrap gap-1">
-                                {(task.assignees || (task as any).assignee ? [task.assignees ? task.assignees : (task as any).assignee] : []).flat().map((a, i) => (
+                                {(task.assignees || []).map((a, i) => (
                                   <span key={i} className="font-medium text-slate-400 bg-slate-800/50 px-2 py-0.5 rounded">
                                     {a}
                                   </span>
