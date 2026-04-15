@@ -5,17 +5,20 @@ import {
   deleteDoc, 
   doc, 
   getDocs, 
+  onSnapshot,
   query, 
   orderBy,
   serverTimestamp,
   type Firestore
 } from "firebase/firestore";
 import { db } from "./config";
-import { Task, TeamMember, Meeting } from "@/types";
+import { Task, TeamMember, Meeting, Quiz, QuizSubmission } from "@/types";
 
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
 const MEETINGS_COLLECTION = "meetings";
+const QUIZZES_COLLECTION = "quizzes";
+const SUBMISSIONS_COLLECTION = "quiz_submissions";
 
 // Helper: ensures Firestore is initialized before any API call.
 // These functions are only called from client components — Firebase will always
@@ -126,4 +129,100 @@ export const deleteMeeting = async (id: string) => {
   const firestore = requireDb();
   const meetingRef = doc(firestore, MEETINGS_COLLECTION, id);
   return await deleteDoc(meetingRef);
+};
+
+// --- Quizzes ---
+
+export const getQuizzes = async (): Promise<Quiz[]> => {
+  const firestore = requireDb();
+  const quizzesRef = collection(firestore, QUIZZES_COLLECTION);
+  const q = query(quizzesRef, orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  } as Quiz));
+};
+
+export const addQuiz = async (quiz: Omit<Quiz, "id" | "createdAt">) => {
+  const firestore = requireDb();
+  const quizzesRef = collection(firestore, QUIZZES_COLLECTION);
+  return await addDoc(quizzesRef, {
+    ...quiz,
+    createdAt: serverTimestamp()
+  });
+};
+
+export const updateQuiz = async (id: string, data: Partial<Quiz>) => {
+  const firestore = requireDb();
+  const quizRef = doc(firestore, QUIZZES_COLLECTION, id);
+  return await updateDoc(quizRef, data);
+};
+
+export const deleteQuiz = async (id: string) => {
+  const firestore = requireDb();
+  const quizRef = doc(firestore, QUIZZES_COLLECTION, id);
+  return await deleteDoc(quizRef);
+};
+
+export const subscribeToQuizzes = (callback: (quizzes: Quiz[]) => void) => {
+  const firestore = requireDb();
+  const quizzesRef = collection(firestore, QUIZZES_COLLECTION);
+  const q = query(quizzesRef, orderBy("createdAt", "desc"));
+
+  return onSnapshot(q, (querySnapshot) => {
+    const data = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as Quiz));
+    callback(data);
+  });
+};
+
+// --- Submissions / Leaderboard ---
+
+export const submitQuizResult = async (submission: Omit<QuizSubmission, "id" | "completedAt">) => {
+  const firestore = requireDb();
+  const submissionsRef = collection(firestore, SUBMISSIONS_COLLECTION);
+  return await addDoc(submissionsRef, {
+    ...submission,
+    completedAt: serverTimestamp()
+  });
+};
+
+export const getLeaderboard = async (limitCount: number = 50): Promise<QuizSubmission[]> => {
+  const firestore = requireDb();
+  const submissionsRef = collection(firestore, SUBMISSIONS_COLLECTION);
+  // Sort by score (desc) and then timeTaken (asc)
+  const q = query(
+    submissionsRef, 
+    orderBy("score", "desc"),
+    orderBy("timeTaken", "asc")
+  );
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  } as QuizSubmission)).slice(0, limitCount);
+};
+
+export const subscribeToLeaderboard = (
+  callback: (submissions: QuizSubmission[]) => void, 
+  limitCount: number = 50
+) => {
+  const firestore = requireDb();
+  const submissionsRef = collection(firestore, SUBMISSIONS_COLLECTION);
+  const q = query(
+    submissionsRef, 
+    orderBy("score", "desc"),
+    orderBy("timeTaken", "asc")
+  );
+
+  return onSnapshot(q, (querySnapshot) => {
+    const data = querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    } as QuizSubmission)).slice(0, limitCount);
+    callback(data);
+  });
 };

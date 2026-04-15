@@ -30,18 +30,20 @@ We use a **Scoped Layout Pattern** to ensure data isolation:
 
 ### 1. Data Types
 - **Path**: `src/types/index.ts`
-- **Rule**: All major interfaces (`Task`, `TeamMember`, `Meeting`) MUST be defined here and shared across the project. Do NOT define local versions of these types.
+- **Rule**: All major interfaces (`Task`, `TeamMember`, `Meeting`, `Quiz`, `QuizSubmission`) MUST be defined here and shared across the project. Do NOT define local versions of these types.
 
 ### 2. Firestore API & Config
-- **Path**: `src/firebase/config.ts` (Firebase credentials)
 - **Path**: `src/firebase/api.ts` (Firestore CRUD)
+- **Collections**: `tasks`, `team_members`, `meetings`, `quizzes`, `quiz_submissions`.
 - **Instruction**: Use the exported functions (e.g., `getTasks`, `addMeeting`) instead of writing raw Firestore queries in your components.
 
 ### 3. Navigation & Routing
 - **Admin Dashboard**: `/admin`
 - **Task Tracking**: `/admin/task-tracking`
-- **Attendance**: `/admin/attendance` (**HIDDEN ROUTE** - Not linked on the main dashboard UI).
-- **Delegate Registration**: `/register/session/[id]` and `/register/compitition`.
+- **Attendance**: `/admin/attendance` (**HIDDEN ROUTE**).
+- **Quiz Management**: `/admin/quiz` (**HIDDEN ROUTE**).
+- **Delegate Quiz Selection**: `/quiz`
+- **Leaderboard**: `/leaderboard`
 
 ---
 
