@@ -24,3 +24,32 @@ export interface Meeting {
   presentMemberIds: string[];
   createdAt?: Timestamp;
 }
+
+export interface Question {
+  id: string;
+  text: string;
+  options: string[];
+  correctOptionIndex: number;
+  points: number;
+}
+
+export interface Quiz {
+  id?: string;
+  title: string;
+  description: string;
+  timeLimit: number;
+  questions: Question[];
+  isActive: boolean;
+  createdAt?: Timestamp;
+}
+
+export interface QuizSubmission {
+  id?: string;
+  quizId: string;
+  userName: string;
+  userEmail: string;
+  score: number;
+  totalQuestions: number;
+  timeTaken: number;
+  completedAt?: Timestamp;
+}
