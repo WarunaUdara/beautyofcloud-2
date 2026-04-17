@@ -8,10 +8,11 @@ import {
     query,
     orderBy,
     serverTimestamp,
-    Timestamp
+    Timestamp,
+    where
 } from "firebase/firestore";
 import { db } from "./config";
-import { Task, TeamMember, Meeting } from "@/types";
+import { Task, TeamMember, Meeting, Registration } from "@/types";
 
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
@@ -120,4 +121,19 @@ export const addRegistration = async (name: String, email: String, sessionId: St
         console.error(error);
         alert("Error registrating user");
     }
+};
+
+export const getRegistrationsBySession = async (sessionid: string) => {
+
+    const q = query(
+        collection(db, REGISTRATIONS),
+        where("sessionId","==",sessionid)
+    );
+
+    const snapshot = await getDocs(q);
+
+    return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    }));
 };

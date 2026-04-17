@@ -24,3 +24,10 @@ export interface Meeting {
   presentMemberIds: string[];
   createdAt?: Timestamp;
 }
+
+export interface Registration{
+  id?: string;
+  name: string;
+  organization?: string;
+  sessionId: string;
+}
