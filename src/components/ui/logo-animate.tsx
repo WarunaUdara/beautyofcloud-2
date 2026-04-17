@@ -16,35 +16,73 @@ const LogoAnimate = ({ className }: LogoAnimateProps) => {
 
   useGSAP(
     () => {
-      const outerPath = svgRef.current?.querySelector<SVGPathElement>(".js-logo-outer");
-      const innerPath = svgRef.current?.querySelector<SVGPathElement>(".js-logo-inner");
-      const coreCircle = svgRef.current?.querySelector<SVGCircleElement>(".js-logo-core");
-      const coreMark = svgRef.current?.querySelector<SVGPathElement>(".js-logo-mark");
+      const svg = svgRef.current;
+      if (!svg) {
+        return;
+      }
+
+      const outerPath = svg.querySelector<SVGPathElement>(".js-logo-outer");
+      const innerPath = svg.querySelector<SVGPathElement>(".js-logo-inner");
+      const coreCircle = svg.querySelector<SVGCircleElement>(".js-logo-core");
+      const coreMark = svg.querySelector<SVGPathElement>(".js-logo-mark");
 
       if (!outerPath || !innerPath || !coreCircle || !coreMark) {
         return;
       }
 
+      const reduceMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
       const outerLength = outerPath.getTotalLength();
       const innerLength = innerPath.getTotalLength();
 
-      gsap.set([outerPath, innerPath], {
-        strokeDasharray: (_: number, target: SVGPathElement) =>
-          target === outerPath ? outerLength : innerLength,
-        strokeDashoffset: (_: number, target: SVGPathElement) =>
-          target === outerPath ? outerLength : innerLength,
-      });
+      const resetLogoState = () => {
+        gsap.set(outerPath, {
+          strokeDasharray: outerLength,
+          strokeDashoffset: outerLength,
+          fill: "rgba(0, 153, 255, 0)",
+        });
 
-      gsap.set(outerPath, { fill: "rgba(0, 153, 255, 0)" });
-      gsap.set(innerPath, { fill: "rgba(10, 11, 43, 0)" });
-      gsap.set([coreCircle, coreMark], {
-        scale: 1,
-        transformOrigin: "50% 50%",
-      });
+        gsap.set(innerPath, {
+          strokeDasharray: innerLength,
+          strokeDashoffset: innerLength,
+          fill: "rgba(10, 11, 43, 0)",
+        });
+
+        gsap.set([coreCircle, coreMark], {
+          scale: 1,
+          transformOrigin: "50% 50%",
+        });
+      };
+
+      if (reduceMotion) {
+        gsap.set(outerPath, {
+          strokeDasharray: outerLength,
+          strokeDashoffset: 0,
+          fill: "#0099FF",
+        });
+
+        gsap.set(innerPath, {
+          strokeDasharray: innerLength,
+          strokeDashoffset: 0,
+          fill: "#0A0B2B",
+        });
+
+        gsap.set([coreCircle, coreMark], {
+          scale: 1,
+          transformOrigin: "50% 50%",
+        });
+
+        return;
+      }
+
+      resetLogoState();
 
       const tl = gsap.timeline({
         repeat: -1,
-        repeatDelay: 0.7,
+        repeatDelay: 0.8,
+        onRepeat: resetLogoState,
         defaults: {
           ease: "power2.inOut",
         },
@@ -52,45 +90,49 @@ const LogoAnimate = ({ className }: LogoAnimateProps) => {
 
       tl.to(innerPath, {
         strokeDashoffset: 0,
-        duration: 0.85,
+        duration: 1.2,
       })
         .to(
           innerPath,
           {
             fill: "#0A0B2B",
-            duration: 0.45,
-            ease: "power1.out",
+            duration: 0.55,
+            ease: "power1.inOut",
           },
-          "<0.42"
+          "<0.25"
         )
         .to(
           outerPath,
           {
             strokeDashoffset: 0,
-            duration: 1.2,
+            duration: 1.8,
           },
-          "<0.04"
+          "<0.05"
         )
         .to(
           outerPath,
           {
             fill: "#0099FF",
-            duration: 0.48,
-            ease: "power1.out",
+            duration: 0.7,
+            ease: "power1.inOut",
           },
-          "<0.72"
+          "<0.5"
         )
         .to(
           [coreCircle, coreMark],
           {
             scale: 1.1,
-            duration: 0.55,
+            duration: 0.75,
             ease: "sine.inOut",
             yoyo: true,
             repeat: 1,
           },
-          "<"
+          "<0.1"
         );
+
+      return () => {
+        tl.kill();
+      };
     },
     { scope: svgRef }
   );

@@ -20,10 +20,16 @@ export default function ScreenLoader({ isVisible }: ScreenLoaderProps) {
         return;
       }
 
+      const logoElement = loaderRef.current.querySelector<SVGElement>(
+        ".js-loader-logo"
+      );
+
       gsap.killTweensOf(loaderRef.current);
+      if (logoElement) {
+        gsap.killTweensOf(logoElement);
+      }
 
       if (isVisible) {
-        gsap.killTweensOf(loaderRef.current);
         gsap.set(loaderRef.current, {
           display: "flex",
           autoAlpha: 1,
@@ -36,16 +42,18 @@ export default function ScreenLoader({ isVisible }: ScreenLoaderProps) {
           { autoAlpha: 1, duration: 0.18, ease: "power2.out" }
         );
 
-        gsap.fromTo(
-          ".js-loader-logo",
-          { scale: 0.92, autoAlpha: 0.85 },
-          {
-            scale: 1,
-            autoAlpha: 1,
-            duration: 0.38,
-            ease: "power2.out",
-          }
-        );
+        if (logoElement) {
+          gsap.fromTo(
+            logoElement,
+            { scale: 0.92, autoAlpha: 0.85 },
+            {
+              scale: 1,
+              autoAlpha: 1,
+              duration: 0.38,
+              ease: "power2.out",
+            }
+          );
+        }
 
         return;
       }
