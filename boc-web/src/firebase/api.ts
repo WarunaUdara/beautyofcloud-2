@@ -1,14 +1,14 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  query, 
-  orderBy,
-  serverTimestamp,
-  Timestamp
+import {
+    collection,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    getDocs,
+    query,
+    orderBy,
+    serverTimestamp,
+    Timestamp
 } from "firebase/firestore";
 import { db } from "./config";
 import { Task, TeamMember, Meeting } from "@/types";
@@ -16,91 +16,108 @@ import { Task, TeamMember, Meeting } from "@/types";
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
 const MEETINGS_COLLECTION = "meetings";
+const REGISTRATIONS = "registrations";
 
 // --- Tasks ---
 
 export const getTasks = async (): Promise<Task[]> => {
-  const tasksRef = collection(db, TASKS_COLLECTION);
-  const q = query(tasksRef, orderBy("createdAt", "desc"));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as Task));
+    const tasksRef = collection(db, TASKS_COLLECTION);
+    const q = query(tasksRef, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Task));
 };
 
 export const addTask = async (task: Omit<Task, "id" | "createdAt">) => {
-  const tasksRef = collection(db, TASKS_COLLECTION);
-  return await addDoc(tasksRef, {
-    ...task,
-    createdAt: serverTimestamp()
-  });
+    const tasksRef = collection(db, TASKS_COLLECTION);
+    return await addDoc(tasksRef, {
+        ...task,
+        createdAt: serverTimestamp()
+    });
 };
 
 export const updateTask = async (id: string, data: Partial<Task>) => {
-  const taskRef = doc(db, TASKS_COLLECTION, id);
-  return await updateDoc(taskRef, data);
+    const taskRef = doc(db, TASKS_COLLECTION, id);
+    return await updateDoc(taskRef, data);
 };
 
 export const deleteTask = async (id: string) => {
-  const taskRef = doc(db, TASKS_COLLECTION, id);
-  return await deleteDoc(taskRef);
+    const taskRef = doc(db, TASKS_COLLECTION, id);
+    return await deleteDoc(taskRef);
 };
 
 // --- Team Members ---
 
 export const getTeamMembers = async (): Promise<TeamMember[]> => {
-  const teamRef = collection(db, TEAM_MEMBERS_COLLECTION);
-  const q = query(teamRef, orderBy("name", "asc"));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as TeamMember));
+    const teamRef = collection(db, TEAM_MEMBERS_COLLECTION);
+    const q = query(teamRef, orderBy("name", "asc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as TeamMember));
 };
 
 export const addTeamMember = async (name: string) => {
-  const teamRef = collection(db, TEAM_MEMBERS_COLLECTION);
-  return await addDoc(teamRef, {
-    name,
-    createdAt: serverTimestamp()
-  });
+    const teamRef = collection(db, TEAM_MEMBERS_COLLECTION);
+    return await addDoc(teamRef, {
+        name,
+        createdAt: serverTimestamp()
+    });
 };
 
 export const deleteTeamMember = async (id: string) => {
-  const teamRef = doc(db, TEAM_MEMBERS_COLLECTION, id);
-  return await deleteDoc(teamRef);
+    const teamRef = doc(db, TEAM_MEMBERS_COLLECTION, id);
+    return await deleteDoc(teamRef);
 };
 
 // --- Meetings / Attendance ---
 
 export const getMeetings = async (): Promise<Meeting[]> => {
-  const meetingsRef = collection(db, MEETINGS_COLLECTION);
-  const q = query(meetingsRef, orderBy("createdAt", "desc"));
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  } as Meeting));
+    const meetingsRef = collection(db, MEETINGS_COLLECTION);
+    const q = query(meetingsRef, orderBy("createdAt", "desc"));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Meeting));
 };
 
 export const addMeeting = async (title: string, description: string, date: string) => {
-  const meetingsRef = collection(db, MEETINGS_COLLECTION);
-  return await addDoc(meetingsRef, {
-    title,
-    description,
-    date,
-    presentMemberIds: [],
-    createdAt: serverTimestamp()
-  });
+    const meetingsRef = collection(db, MEETINGS_COLLECTION);
+    return await addDoc(meetingsRef, {
+        title,
+        description,
+        date,
+        presentMemberIds: [],
+        createdAt: serverTimestamp()
+    });
 };
 
 export const updateMeetingAttendance = async (meetingId: string, presentMemberIds: string[]) => {
-  const meetingRef = doc(db, MEETINGS_COLLECTION, meetingId);
-  return await updateDoc(meetingRef, { presentMemberIds });
+    const meetingRef = doc(db, MEETINGS_COLLECTION, meetingId);
+    return await updateDoc(meetingRef, { presentMemberIds });
 };
 
 export const deleteMeeting = async (id: string) => {
-  const meetingRef = doc(db, MEETINGS_COLLECTION, id);
-  return await deleteDoc(meetingRef);
+    const meetingRef = doc(db, MEETINGS_COLLECTION, id);
+    return await deleteDoc(meetingRef);
+};
+
+// --- Registrations ---
+export const addRegistration = async (name: String, email: String, sessionId: String, organization?: String) => {
+    try{
+        const docRef = collection(db, REGISTRATIONS);
+        return await addDoc(docRef, {
+            name,
+            email,
+            organization,
+            sessionId
+        });
+    }catch(error){
+        console.error(error);
+        alert("Error registrating user");
+    }
 };
