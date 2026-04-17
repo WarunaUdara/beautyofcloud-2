@@ -1,8 +1,19 @@
 import type { Metadata } from "next";
-import { GeistSans } from "geist/font/sans";
-import { GeistMono } from "geist/font/mono";
+import localFont from "next/font/local";
 import { AuthProvider } from "@/context/AuthContext";
 import "./globals.css";
+
+const reglo = localFont({
+  src: "../../public/Reglo-Bold.otf",
+  variable: "--font-reglo",
+  display: "swap",
+});
+
+const uncut = localFont({
+  src: "../../public/UncutSans-Variable.ttf",
+  variable: "--font-uncut",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "Beauty of Cloud 2.0 | Sri Lanka's Inter-University Cloud Ideathon",
@@ -18,9 +29,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${GeistSans.variable} ${GeistMono.variable} h-full antialiased`}
+      className={`${reglo.variable} ${uncut.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col font-uncut">
         <AuthProvider>
           {children}
         </AuthProvider>

@@ -1,26 +1,330 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #000000;
+  --foreground: #f3f4f5;
+  --brand-primary: #2b89f3;
+  --line: #1b1b1b;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-brand: var(--brand-primary);
+  --font-reglo: var(--font-reglo), serif;
+  --font-uncut: var(--font-uncut), sans-serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-uncut), sans-serif;
+}
+
+.glass {
+  background: rgba(19, 18, 10, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.border-line {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.boc-page {
+  position: relative;
+  overflow-x: clip;
+  min-height: 100vh;
+  background: var(--background);
+}
+
+.boc-grain-stage {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.34;
+}
+
+.boc-grain {
+  width: 100%;
+  height: 100%;
+}
+
+.boc-progress-rail {
+  position: fixed;
+  top: 0;
+  left: clamp(1rem, 5vw, 4rem);
+  width: 2px;
+  height: 100vh;
+  z-index: 30;
+  background: #232323;
+}
+
+.boc-progress-line {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #2b89f3 0%, #7ab6f8 100%);
+}
+
+.boc-section {
+  position: relative;
+  z-index: 2;
+  padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 7vw, 6.5rem);
+}
+
+.boc-hero {
+  min-height: 94vh;
+  display: grid;
+  align-content: center;
+  gap: clamp(1rem, 2.2vw, 1.6rem);
+}
+
+.boc-kicker {
+  display: inline-flex;
+  font-size: clamp(0.74rem, 1vw, 0.95rem);
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  font-variation-settings: "wght" 580;
+}
+
+.boc-title-wrap,
+.boc-subtitle-wrap,
+.boc-endnote-wrap,
+.boc-sticky-copy-wrap,
+.boc-kicker {
+  position: relative;
+  overflow: hidden;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.boc-title-wrap {
+  padding-top: clamp(0.35rem, 1vw, 0.9rem);
+}
+
+.boc-title {
+  margin: 0;
+  font-family: var(--font-reglo), serif;
+  font-size: clamp(2.7rem, 8.4vw, 8.8rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  color: #f7f9fa;
+}
+
+.boc-subtitle {
+  max-width: 60ch;
+  margin: 0;
+  font-size: clamp(1rem, 1.65vw, 1.5rem);
+  line-height: 1.62;
+  color: #d7d7d7;
+}
+
+.js-reveal-text {
+  position: relative;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.boc-reveal-mask-white,
+.boc-reveal-mask-blue {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.boc-reveal-mask-white {
+  z-index: 3;
+  background: #ffffff;
+}
+
+.boc-reveal-mask-blue {
+  z-index: 4;
+  background: var(--brand-primary);
+}
+
+.boc-story {
+  display: grid;
+  gap: clamp(2rem, 5vw, 4rem);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.boc-sticky-column {
+  position: relative;
+}
+
+.boc-sticky-copy {
+  margin: 0;
+  font-family: var(--font-reglo), serif;
+  font-size: clamp(2.2rem, 5vw, 4.4rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.boc-panels {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.boc-panel {
+  border: 1px solid #1f1f1f;
+  background: transparent;
+  min-height: 7.2rem;
+  padding: 1.1rem 1rem;
+  display: grid;
+  gap: 0.7rem;
+  transform-origin: center center;
+}
+
+.boc-panel-index {
+  font-family: var(--font-reglo), serif;
+  font-size: 1.25rem;
+  color: var(--brand-primary);
+}
+
+.boc-panel p {
+  margin: 0;
+  font-size: clamp(0.96rem, 1.3vw, 1.14rem);
+  line-height: 1.55;
+  color: #f1f2f3;
+}
+
+.boc-cloud {
+  min-height: 88vh;
+  display: grid;
+  gap: clamp(1.1rem, 2.6vw, 2.2rem);
+}
+
+.boc-cloud-copy {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.boc-cloud-question-wrap,
+.boc-cloud-note-wrap {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.boc-cloud-question {
+  margin: 0;
+  font-family: var(--font-reglo), serif;
+  font-size: clamp(1.7rem, 4.6vw, 3.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: #f4f7fb;
+}
+
+.boc-cloud-note {
+  margin: 0;
+  max-width: 60ch;
+  font-size: clamp(0.98rem, 1.42vw, 1.2rem);
+  line-height: 1.56;
+  color: #d4d9df;
+}
+
+.boc-cloud-frame {
+  position: relative;
+  border: 1px solid #202020;
+  min-height: clamp(25rem, 70vh, 52rem);
+  overflow: hidden;
+}
+
+.boc-cloud-image {
+  object-fit: cover;
+  transform: scale(1.08);
+}
+
+.boc-cloud-scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, #00000021 0%, #000000ed 88%),
+    linear-gradient(90deg, #2b89f32b 0%, transparent 56%);
+}
+
+.boc-endnote {
+  min-height: 68vh;
+  display: grid;
+  align-content: center;
+  padding-bottom: clamp(2rem, 8vw, 6rem);
+}
+
+.boc-footer-box {
+  position: relative;
+  border-top: 1px solid #1f1f1f;
+  padding-top: clamp(3rem, 8vw, 6rem);
+  padding-bottom: clamp(5rem, 8vw, 8rem);
+}
+
+.boc-footer-title {
+  margin: 0;
+  font-family: var(--font-reglo), serif;
+  font-size: clamp(2.5rem, 9vw, 7.8rem);
+  line-height: 0.94;
+  color: #2b89f3;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+.boc-endnote-text {
+  margin: clamp(1.5rem, 4vw, 3rem) 0 0;
+  font-size: clamp(1.1rem, 2.3vw, 2rem);
+  line-height: 1.45;
+  max-width: 42ch;
+  color: #ececec;
+}
+
+.boc-footer-blur {
+  left: 0;
+  right: 0;
+}
+
+/* Required initial states for three-layer reveal architecture. */
+.js-triple-reveal {
+  display: inline-block;
+  position: relative;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .boc-title {
+    white-space: nowrap;
+  }
+
+  .boc-story {
+    grid-template-columns: 0.95fr 1.2fr;
+    align-items: start;
+  }
+
+  .boc-sticky-column {
+    position: sticky;
+    top: 17vh;
+  }
+
+  .boc-panel {
+    min-height: 8.1rem;
+    padding: 1.45rem 1.4rem;
+  }
+
+  .boc-endnote {
+    min-height: 82vh;
+  }
+}
+
+@media (max-width: 640px) {
+  .boc-progress-rail {
+    left: 0.75rem;
+  }
+
+  .boc-panel {
+    min-height: 6.6rem;
+  }
 }
