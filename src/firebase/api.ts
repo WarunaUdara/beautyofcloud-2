@@ -4,7 +4,9 @@ import {
   updateDoc, 
   deleteDoc, 
   doc, 
-  getDocs, 
+  getDocs,
+  getDoc,
+  setDoc,
   onSnapshot,
   query, 
   orderBy,
@@ -21,6 +23,7 @@ const MEETINGS_COLLECTION = "meetings";
 const QUIZZES_COLLECTION = "quizzes";
 const SUBMISSIONS_COLLECTION = "quiz_submissions";
 const REGISTRATIONS_COLLECTION = "registrations";
+const USERS_COLLECTION = "users";
 
 // Helper: ensures Firestore is initialized before any API call.
 // These functions are only called from client components — Firebase will always
@@ -33,6 +36,30 @@ function requireDb(): Firestore {
   }
   return db;
 }
+
+// --- Users ---
+
+export const checkAndInitializeUser = async (uid: string, email: string | null, name: string | null): Promise<string> => {
+  const firestore = requireDb();
+  const userRef = doc(firestore, USERS_COLLECTION, uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    // Initialize user with role 'user'
+    await setDoc(userRef, {
+      uid,
+      email,
+      name,
+      role: 'user',
+      createdAt: serverTimestamp()
+    });
+    return 'user';
+  }
+
+  // Return the existing role
+  const userData = userSnap.data();
+  return (userData.role as string) || 'user';
+};
 
 // --- Tasks ---
 
