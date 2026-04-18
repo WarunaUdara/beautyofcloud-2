@@ -35,6 +35,14 @@ export interface Quiz {
   createdAt?: Timestamp;
 }
 
+export interface Registration {
+  id?: string;
+  name: string;
+  email: string;
+  organization?: string;
+  sessionId: string;
+}
+
 export interface Question {
   id: string;
   text: string;

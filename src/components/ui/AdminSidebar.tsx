@@ -13,7 +13,8 @@ import {
   LogOut,
   Cloud,
   ChevronRight,
-  Monitor
+  Monitor,
+  UserPlus
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ interface SidebarProps {
 
 const navItems = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Registrations', href: '/admin/registrations', icon: UserPlus },
   { name: 'Live Leaderboard', href: '/admin/leaderboard', icon: Trophy },
   { name: 'Quiz Management', href: '/admin/quiz', icon: Monitor },
   { name: 'Task Tracking', href: '/admin/task-tracking', icon: CheckSquare },

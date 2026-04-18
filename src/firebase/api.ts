@@ -8,17 +8,19 @@ import {
   onSnapshot,
   query, 
   orderBy,
+  where,
   serverTimestamp,
   type Firestore
 } from "firebase/firestore";
 import { db } from "./config";
-import { Task, TeamMember, Meeting, Quiz, QuizSubmission } from "@/types";
+import { Task, TeamMember, Meeting, Quiz, QuizSubmission, Registration } from "@/types";
 
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
 const MEETINGS_COLLECTION = "meetings";
 const QUIZZES_COLLECTION = "quizzes";
 const SUBMISSIONS_COLLECTION = "quiz_submissions";
+const REGISTRATIONS_COLLECTION = "registrations";
 
 // Helper: ensures Firestore is initialized before any API call.
 // These functions are only called from client components — Firebase will always
@@ -177,6 +179,28 @@ export const subscribeToQuizzes = (callback: (quizzes: Quiz[]) => void) => {
     } as Quiz));
     callback(data);
   });
+};
+
+// --- Registrations ---
+
+export const addRegistration = async (registration: Omit<Registration, "id">) => {
+  const firestore = requireDb();
+  const registrationsRef = collection(firestore, REGISTRATIONS_COLLECTION);
+  return await addDoc(registrationsRef, {
+    ...registration,
+    createdAt: serverTimestamp()
+  });
+};
+
+export const getRegistrationsBySession = async (sessionId: string): Promise<Registration[]> => {
+  const firestore = requireDb();
+  const registrationsRef = collection(firestore, REGISTRATIONS_COLLECTION);
+  const q = query(registrationsRef, where("sessionId", "==", sessionId), orderBy("createdAt", "desc"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  } as Registration));
 };
 
 // --- Submissions / Leaderboard ---
