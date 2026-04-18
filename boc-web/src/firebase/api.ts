@@ -1,11 +1,13 @@
-import { 
-  collection, 
-  addDoc, 
-  updateDoc, 
-  deleteDoc, 
-  doc, 
-  getDocs, 
-  query, 
+import {
+  collection,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  getDocs,
+  getDoc,
+  setDoc,
+  query,
   orderBy,
   serverTimestamp,
   Timestamp
@@ -13,9 +15,34 @@ import {
 import { db } from "./config";
 import { Task, TeamMember, Meeting } from "@/types";
 
+const USERS_COLLECTION = "users";
+
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
 const MEETINGS_COLLECTION = "meetings";
+
+// --- Users ---
+
+export const checkAndInitializeUser = async (uid: string, email: string | null, name: string | null) => {
+  const userRef = doc(db, USERS_COLLECTION, uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    // Initialize user with role 'user'
+    await setDoc(userRef, {
+      uid,
+      email,
+      name,
+      role: 'user',
+      createdAt: serverTimestamp()
+    });
+    return 'user';
+  }
+
+  // Return the existing role
+  const userData = userSnap.data();
+  return userData.role || 'user';
+};
 
 // --- Tasks ---
 
