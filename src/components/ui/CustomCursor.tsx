@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion, useSpring, useMotionValue } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 
 export const CustomCursor: React.FC = () => {
+  const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
   const mouseX = useMotionValue(-100);
   const mouseY = useMotionValue(-100);
@@ -24,7 +26,7 @@ export const CustomCursor: React.FC = () => {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [mouseX, mouseY]);
 
-  if (!isMounted) return null;
+  if (!isMounted || pathname?.startsWith('/admin')) return null;
 
   return (
     <motion.div
