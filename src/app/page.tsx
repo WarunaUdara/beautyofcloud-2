@@ -1,40 +1,98 @@
-"use client";
+'use client';
 
-import { useRef, useState } from "react";
-import BackgroundEffects from "@/components/landing/BackgroundEffects";
-import CloudSection from "@/components/landing/CloudSection";
-import FooterSection from "@/components/landing/FooterSection";
-import HeroSection from "@/components/landing/HeroSection";
-import StorySection from "@/components/landing/StorySection";
-import useLandingAnimations from "@/components/landing/useLandingAnimations";
-import ScreenLoader from "@/components/ui/screen-loader";
-import AdminLoginModal from "@/components/ui/AdminLoginModal";
-import { Lock } from "lucide-react";
+import React, { useRef } from 'react';
+import { useScroll, AnimatePresence, motion } from "framer-motion";
+
+// Layout Components
+import { Header } from "@/components/layout/Header";
+import { ProgressBar } from "@/components/layout/ProgressBar";
+
+// UI Components
+import { TerminalOverlay } from "@/components/ui/TerminalOverlay";
+import { Timeline } from "@/components/ui/Timeline";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
+import { LoadingScreen } from "@/components/ui/LoadingScreen";
+
+// Sections
+import { Hero } from "@/components/sections/Hero";
+import { About } from "@/components/sections/About";
+import { GridMotionGallery } from "@/components/sections/GridMotionGallery";
+import { Experience } from "@/components/sections/Experience";
+import { Team } from "@/components/sections/Team";
+import { Partners } from "@/components/sections/Partners";
+import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
-  const pageRef = useRef<HTMLDivElement>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const targetRef = useRef<HTMLDivElement>(null);
 
-  useLandingAnimations(pageRef, { onReady: () => setIsLoading(false) });
+  React.useEffect(() => {
+    // Lock scroll while loading
+    if (isLoading) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    // Artificial delay to ensure the premium animation is seen
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2500);
+    return () => {
+      clearTimeout(timer);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isLoading]);
+  
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+    offset: ["start start", "end end"]
+  });
 
   return (
     <>
-      <ScreenLoader isVisible={isLoading} />
+      <AnimatePresence>
+        {isLoading && (
+          <motion.div 
+            key="loader" 
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
+            className="fixed inset-0 z-[1000]"
+          >
+            <LoadingScreen />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      <main ref={pageRef} className="js-page boc-page relative">
-        <BackgroundEffects />
-        <HeroSection />
-        <StorySection />
-        <CloudSection />
-        <FooterSection onAdminClick={() => setIsAdminModalOpen(true)} />
+      <div 
+        ref={targetRef} 
+        className="relative w-full bg-background selection:bg-accent selection:text-white"
+      >
+        {/* Foundation */}
+        <div className="bg-mesh" />
+        {/* <TerminalOverlay /> */}
+        <ProgressBar targetRef={targetRef} />
+
+        {/* Layout */}
+        <Header />
+
+        {/* Narrative Flow */}
+        <Hero scrollYProgress={scrollYProgress} />
         
-      </main>
+        <About />
 
-      <AdminLoginModal 
-        isOpen={isAdminModalOpen}
-        onClose={() => setIsAdminModalOpen(false)}
-      />
+        <GridMotionGallery />
+
+        <Timeline />
+
+        <Experience />
+
+        <Team />
+
+        <Partners />
+
+        <Footer />
+      </div>
     </>
   );
 }
