@@ -1,24 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #f3f4f5;
+  --background: #020617;
+  --foreground: #f8fafc;
   --brand-primary: #2b89f3;
   --line: #1b1b1b;
+  --aws-orange: #3b82f6;
+  --gcp-blue: #0ea5e9;
+  --accent: #3b82f6;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-brand: var(--brand-primary);
+  --color-aws: var(--aws-orange);
+  --color-gcp: var(--gcp-blue);
+  --color-accent: var(--accent);
   --font-reglo: var(--font-reglo), serif;
   --font-uncut: var(--font-uncut), sans-serif;
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-uncut), sans-serif;
+  font-family: var(--font-uncut), var(--font-geist-sans), sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
 .glass {
@@ -327,4 +337,119 @@ body {
   .boc-panel {
     min-height: 6.6rem;
   }
+}
+
+.grain {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.01; /* Reduced significantly for clarity */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3e%3cfilter id='noiseFilter'%3e%3cfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3e%3c/filter%3e%3crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3e%3c/svg%3e");
+}
+
+/* Animations & Utilities from Samples */
+@keyframes glitch {
+  0% { text-shadow: 1px 0 #3b82f6, -1px 0 #0ea5e9; }
+  50% { text-shadow: -1px 0 #3b82f6, 1px 0 #0ea5e9; }
+  100% { text-shadow: 1px 0 #3b82f6, -1px 0 #0ea5e9; }
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(60px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes scaleIn {
+  0% { opacity: 0; transform: scale(0); }
+  70% { opacity: 0.7; transform: scale(1.1); }
+  100% { opacity: 0.7; transform: scale(1); }
+}
+
+@keyframes expandWidth {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); }
+  50% { transform: translateY(-15px) translateX(5px) rotate(2deg); }
+  100% { transform: translateY(0) translateX(0) rotate(0deg); }
+}
+
+.animate-slideUp { animation: slideUp 1.2s ease-out forwards; }
+.animate-fadeIn { animation: fadeIn 1s ease-out forwards; }
+.animate-scaleIn { animation: scaleIn 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards; }
+.animate-expandWidth { animation: expandWidth 1.2s ease-out forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
+
+.bg-grid-white {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+.animate-glitch:hover {
+  animation: glitch 0.3s infinite linear alternate-reverse;
+}
+
+.text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  color: transparent;
+}
+
+.hyper-border {
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.hyper-border:hover {
+  border-color: var(--accent);
+  background: rgba(255, 62, 0, 0.02);
+}
+
+/* Base Styles - Solid Obsidian Update */
+.glass-obsidian {
+  background: #0f172a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+}
+
+.glass-dark {
+  background: #020617;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9);
+}
+
+.glow-aws {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+}
+
+.glow-gcp {
+  box-shadow: 0 0 30px rgba(14, 165, 233, 0.15);
+}
+
+.glow-accent {
+  box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar, .custom-scrollbar::-webkit-scrollbar { 
+  width: 4px; 
+}
+
+::-webkit-scrollbar-track, .custom-scrollbar::-webkit-scrollbar-track { 
+  background: var(--background); 
+}
+
+::-webkit-scrollbar-thumb, .custom-scrollbar::-webkit-scrollbar-thumb { 
+  background: #333; 
+}
+
+::-webkit-scrollbar-thumb:hover, .custom-scrollbar::-webkit-scrollbar-thumb:hover { 
+  background: var(--accent); 
 }

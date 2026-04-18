@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
+import { JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
+import { CustomCursor } from "@/components/ui/CustomCursor";
 import "./globals.css";
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
 
 const reglo = localFont({
   src: "../../public/Reglo-Bold.otf",
@@ -29,9 +37,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${reglo.variable} ${uncut.variable} h-full antialiased`}
+      className={`${GeistSans.variable} ${jetbrainsMono.variable} ${reglo.variable} ${uncut.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-uncut">
+      <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-accent selection:text-white">
+        <div className="grain"></div>
+        <CustomCursor />
         <AuthProvider>
           {children}
         </AuthProvider>

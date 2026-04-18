@@ -5,7 +5,20 @@ const nextConfig: NextConfig = {
   images: {
     // Add remote image domains here as needed
     // Example: remotePatterns: [{ protocol: 'https', hostname: 'example.com' }],
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'assets.codepen.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      }
+    ],
   },
 };
 

@@ -10,13 +10,20 @@ interface GlassCardProps {
   children: React.ReactNode;
   className?: string;
   hover?: boolean;
+  variant?: 'base' | 'dark';
 }
 
-export const GlassCard: React.FC<GlassCardProps> = ({ children, className, hover = false }) => {
+export const GlassCard: React.FC<GlassCardProps> = ({ 
+  children, 
+  className, 
+  hover = false,
+  variant = 'base'
+}) => {
   return (
     <div className={cn(
-      "bg-slate-900/40 backdrop-blur-xl border border-slate-800/50 rounded-2xl overflow-hidden transition-all duration-300",
-      hover && "hover:bg-slate-900/60 hover:border-slate-700/50 hover:shadow-[0_0_30px_rgba(34,211,238,0.1)]",
+      variant === 'base' ? "glass" : "glass-dark",
+      "rounded-2xl overflow-hidden transition-all duration-500",
+      hover && "hover:border-white/20 hover:bg-white/[0.05] hover:shadow-[0_0_50px_rgba(255,255,255,0.05)]",
       className
     )}>
       {children}

@@ -25,22 +25,22 @@ export interface Meeting {
   createdAt?: Timestamp;
 }
 
+export interface Quiz {
+  id?: string;
+  title: string;
+  description: string;
+  isActive: boolean;
+  timeLimit: number;
+  questions: Question[];
+  createdAt?: Timestamp;
+}
+
 export interface Question {
   id: string;
   text: string;
   options: string[];
   correctOptionIndex: number;
   points: number;
-}
-
-export interface Quiz {
-  id?: string;
-  title: string;
-  description: string;
-  timeLimit: number;
-  questions: Question[];
-  isActive: boolean;
-  createdAt?: Timestamp;
 }
 
 export interface QuizSubmission {
