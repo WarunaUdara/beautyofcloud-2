@@ -27,24 +27,8 @@ export default function Home() {
         <HeroSection />
         <StorySection />
         <CloudSection />
-        <FooterSection />
+        <FooterSection onAdminClick={() => setIsAdminModalOpen(true)} />
         
-        {/* Internal Tools Bar */}
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex items-center gap-6 px-6 py-3 rounded-2xl bg-[#0f172a]/40 border border-white/5 backdrop-blur-xl opacity-40 hover:opacity-100 transition-all duration-500 shadow-2xl">
-          <a href="/landing-page" className="text-[10px] uppercase font-black tracking-[0.2em] text-slate-500 hover:text-blue-500 transition-colors">
-            Experimental V2
-          </a>
-          
-          <div className="w-[1px] h-3 bg-white/10" />
-
-          <button 
-            onClick={() => setIsAdminModalOpen(true)}
-            className="flex items-center gap-2 text-[10px] uppercase font-black tracking-[0.2em] text-slate-500 hover:text-purple-500 transition-colors"
-          >
-            <Lock size={10} strokeWidth={3} />
-            <span>Admin Terminal</span>
-          </button>
-        </div>
       </main>
 
       <AdminLoginModal 

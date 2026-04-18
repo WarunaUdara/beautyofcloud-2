@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { DataProvider } from "@/context/DataContext";
 import { AdminSidebar } from "@/components/ui/AdminSidebar";
+import AdminAuthGuard from "@/components/auth/AdminAuthGuard";
 
 export default function AdminLayout({
   children,
@@ -37,28 +38,30 @@ export default function AdminLayout({
   }
 
   return (
-    <DataProvider>
-      {/* Root Container: Locked to Viewport (Sri Lanka Business Pattern) */}
-      <div className="fixed inset-0 overflow-hidden bg-[#030712] flex selection:bg-purple-500/30">
-        
-        {/* Fixed Sidebar */}
-        <AdminSidebar 
-          isCollapsed={isCollapsed} 
-          toggleCollapse={toggleSidebar} 
-        />
+    <AdminAuthGuard>
+      <DataProvider>
+        {/* Root Container: Locked to Viewport (Sri Lanka Business Pattern) */}
+        <div className="fixed inset-0 overflow-hidden bg-[#030712] flex selection:bg-purple-500/30">
+          
+          {/* Fixed Sidebar */}
+          <AdminSidebar 
+            isCollapsed={isCollapsed} 
+            toggleCollapse={toggleSidebar} 
+          />
 
-        {/* Main Content Wrapper: margin-aware transition (Sri Lanka Business Pattern) */}
-        <div
-          className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative ${
-            isCollapsed ? "lg:ml-20" : "lg:ml-72"
-          }`}
-        >
-          {/* Scrollable Main Tag (Sri Lanka Business Pattern) */}
-          <main className="flex-1 overflow-y-auto w-full custom-scrollbar p-6 md:p-10">
-            {children}
-          </main>
+          {/* Main Content Wrapper: margin-aware transition (Sri Lanka Business Pattern) */}
+          <div
+            className={`flex-1 flex flex-col min-w-0 transition-all duration-300 relative ${
+              isCollapsed ? "lg:ml-20" : "lg:ml-72"
+            }`}
+          >
+            {/* Scrollable Main Tag (Sri Lanka Business Pattern) */}
+            <main className="flex-1 overflow-y-auto w-full custom-scrollbar p-6 md:p-10">
+              {children}
+            </main>
+          </div>
         </div>
-      </div>
-    </DataProvider>
+      </DataProvider>
+    </AdminAuthGuard>
   );
 }
