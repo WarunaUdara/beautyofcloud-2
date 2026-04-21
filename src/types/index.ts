@@ -61,3 +61,13 @@ export interface QuizSubmission {
   timeTaken: number;
   completedAt?: Timestamp;
 }
+
+export interface ContactMessage {
+  id?: string;
+  name: string;
+  email: string;
+  telephone: string;
+  subject: string;
+  message: string;
+  createdAt?: Timestamp;
+}

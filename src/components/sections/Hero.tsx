@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from "next/image";
 import { motion, useTransform } from "framer-motion";
+import Link from "next/link";
 import { CreationOfAdamNodes } from "@/components/ui/CreationOfAdamNodes";
 import { DitheredLogo } from "@/components/ui/DitheredLogo";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -42,17 +43,19 @@ export const Hero: React.FC<HeroProps> = ({ scrollYProgress }) => {
             </p>
             
             <div className="flex gap-8">
-              <GlassCard className="p-6 px-10 border-blue-500/20 bg-[#0f172a] group hover:border-blue-500 transition-all cursor-pointer rounded-2xl">
-                <div className="flex items-center gap-6">
-                  <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)]">
-                    <Zap className="w-7 h-7 text-blue-500" />
+              <Link href="/register/compitition">
+                <GlassCard className="p-6 px-10 border-blue-500/20 bg-[#0f172a] group hover:border-blue-500 transition-all cursor-pointer rounded-2xl">
+                  <div className="flex items-center gap-6">
+                    <div className="w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                      <Zap className="w-7 h-7 text-blue-500" />
+                    </div>
+                    <div className="text-[12px] uppercase tracking-widest font-mono">
+                      <p className="font-black text-white text-lg">Initialize Protocol</p>
+                      <p className="opacity-40">Registration Open for Batch 09</p>
+                    </div>
                   </div>
-                  <div className="text-[12px] uppercase tracking-widest font-mono">
-                    <p className="font-black text-white text-lg">Initialize Protocol</p>
-                    <p className="opacity-40">Registration Open for Batch 09</p>
-                  </div>
-                </div>
-              </GlassCard>
+                </GlassCard>
+              </Link>
             </div>
           </motion.div>
         </motion.div>

@@ -41,7 +41,9 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground selection:bg-accent selection:text-white">
         <div className="grain"></div>
-        <CustomCursor />
+        <div id="cursor-portal">
+          <CustomCursor />
+        </div>
         <AuthProvider>
           {children}
         </AuthProvider>

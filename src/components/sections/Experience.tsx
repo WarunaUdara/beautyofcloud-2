@@ -2,6 +2,7 @@
 
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
+import Link from 'next/link';
 
 /**
  * Experience — Horizontal Scroll Section
@@ -208,13 +209,15 @@ export const Experience: React.FC = () => {
                 <p className="text-white/30 text-xs font-mono leading-relaxed">
                   Register now for Sri Lanka&apos;s biggest cloud ideathon.
                 </p>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-widest text-xs rounded-xl transition-colors shadow-[0_0_30px_rgba(59,130,246,0.4)]"
-                >
-                  Register Now
-                </motion.button>
+                <Link href="/register/compitition">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white font-bold uppercase tracking-widest text-xs rounded-xl transition-colors shadow-[0_0_30px_rgba(59,130,246,0.4)]"
+                  >
+                    Register Now
+                  </motion.button>
+                </Link>
               </div>
             </motion.div>
           </div>

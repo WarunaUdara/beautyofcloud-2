@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef } from 'react';
-import { useScroll, AnimatePresence, motion } from "framer-motion";
+import { useScroll } from "framer-motion";
 
 // Layout Components
 import { Header } from "@/components/layout/Header";
@@ -11,7 +11,6 @@ import { ProgressBar } from "@/components/layout/ProgressBar";
 import { TerminalOverlay } from "@/components/ui/TerminalOverlay";
 import { Timeline } from "@/components/ui/Timeline";
 import { SmoothScroll } from "@/components/ui/SmoothScroll";
-import { LoadingScreen } from "@/components/ui/LoadingScreen";
 
 // Sections
 import { Hero } from "@/components/sections/Hero";
@@ -23,26 +22,7 @@ import { Partners } from "@/components/sections/Partners";
 import { Footer } from "@/components/sections/Footer";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = React.useState(true);
   const targetRef = useRef<HTMLDivElement>(null);
-
-  React.useEffect(() => {
-    // Lock scroll while loading
-    if (isLoading) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-
-    // Artificial delay to ensure the premium animation is seen
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2500);
-    return () => {
-      clearTimeout(timer);
-      document.body.style.overflow = 'unset';
-    };
-  }, [isLoading]);
   
   const { scrollYProgress } = useScroll({
     target: targetRef,
@@ -51,19 +31,6 @@ export default function Home() {
 
   return (
     <>
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div 
-            key="loader" 
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.8, ease: "easeInOut" } }}
-            className="fixed inset-0 z-[1000]"
-          >
-            <LoadingScreen />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       <div 
         ref={targetRef} 
         className="relative w-full bg-background selection:bg-accent selection:text-white"
@@ -77,17 +44,17 @@ export default function Home() {
         <Header />
 
         {/* Narrative Flow */}
-        <Hero scrollYProgress={scrollYProgress} />
+        {/* <Hero scrollYProgress={scrollYProgress} /> */}
         
-        <About />
+        {/* <About /> */}
 
         <GridMotionGallery />
 
         <Timeline />
 
-        <Experience />
+        {/* <Experience /> */}
 
-        <Team />
+        {/* <Team /> */}
 
         <Partners />
 

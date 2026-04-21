@@ -15,7 +15,7 @@ import {
   type Firestore
 } from "firebase/firestore";
 import { db } from "./config";
-import { Task, TeamMember, Meeting, Quiz, QuizSubmission, Registration } from "@/types";
+import { Task, TeamMember, Meeting, Quiz, QuizSubmission, Registration, ContactMessage } from "@/types";
 
 const TASKS_COLLECTION = "tasks";
 const TEAM_MEMBERS_COLLECTION = "team_members";
@@ -24,6 +24,7 @@ const QUIZZES_COLLECTION = "quizzes";
 const SUBMISSIONS_COLLECTION = "quiz_submissions";
 const REGISTRATIONS_COLLECTION = "registrations";
 const USERS_COLLECTION = "users";
+const CONTACT_MESSAGES_COLLECTION = "contact_messages";
 
 // Helper: ensures Firestore is initialized before any API call.
 // These functions are only called from client components — Firebase will always
@@ -275,5 +276,16 @@ export const subscribeToLeaderboard = (
       ...doc.data()
     } as QuizSubmission)).slice(0, limitCount);
     callback(data);
+  });
+};
+
+// --- Contact Messages ---
+
+export const addContactMessage = async (message: Omit<ContactMessage, "id" | "createdAt">) => {
+  const firestore = requireDb();
+  const messagesRef = collection(firestore, CONTACT_MESSAGES_COLLECTION);
+  return await addDoc(messagesRef, {
+    ...message,
+    createdAt: serverTimestamp()
   });
 };
