@@ -4,6 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/context/AuthContext";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { SmoothScroll } from "@/components/ui/SmoothScroll";
 import "./globals.css";
 
 const jetbrainsMono = JetBrains_Mono({
@@ -45,7 +46,9 @@ export default function RootLayout({
           <CustomCursor />
         </div>
         <AuthProvider>
-          {children}
+          <SmoothScroll>
+            {children}
+          </SmoothScroll>
         </AuthProvider>
       </body>
     </html>

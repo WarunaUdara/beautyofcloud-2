@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Terminal as TerminalIcon, X, Minus, Square, Search, Wifi, Volume2,
   FolderOpen, FileCode, Globe, Settings, Power, Lock, Camera, Battery,
@@ -494,38 +493,60 @@ const Window = ({
   onFocus: () => void;
   content: React.ReactNode;
 }) => {
-  const dragControls = useDragControls();
+  const winRef = useRef<HTMLDivElement>(null);
+  const dragPos = useRef({ x: 0, y: 0, startX: 0, startY: 0, dragging: false });
+
+  const onTitlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (isMobile || app.isMaximised) return;
+    onFocus();
+    const el = winRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    dragPos.current = { x: rect.left, y: rect.top, startX: e.clientX, startY: e.clientY, dragging: true };
+    el.style.left = rect.left + 'px';
+    el.style.top = rect.top + 'px';
+    el.style.transform = 'none';
+    el.setPointerCapture(e.pointerId);
+  }, [isMobile, app.isMaximised, onFocus]);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragPos.current.dragging) return;
+    const el = winRef.current;
+    const container = constraintsRef?.current;
+    if (!el || !container) return;
+    const dx = e.clientX - dragPos.current.startX;
+    const dy = e.clientY - dragPos.current.startY;
+    const bounds = container.getBoundingClientRect();
+    const newX = Math.max(0, Math.min(dragPos.current.x + dx, bounds.width - el.offsetWidth));
+    const newY = Math.max(0, Math.min(dragPos.current.y + dy, bounds.height - el.offsetHeight));
+    el.style.left = newX + 'px';
+    el.style.top = newY + 'px';
+  }, [constraintsRef]);
+
+  const onPointerUp = useCallback(() => {
+    dragPos.current.dragging = false;
+  }, []);
 
   if (!app.isOpen || app.isMinimised) return null;
 
   const isCalculator = app.id === 'calculator';
 
   return (
-    <motion.div
-      drag={!app.isMaximised && !isMobile}
-      dragConstraints={constraintsRef}
-      dragControls={dragControls}
-      dragListener={false}
-      dragMomentum={false}
+    <div
+      ref={winRef}
       onMouseDown={onFocus}
-      initial={{ scale: 0.95, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.15 } }}
-      style={{ zIndex: app.zIndex }}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      style={{ zIndex: app.zIndex, animation: 'winOpen 0.15s ease-out forwards' }}
       className={`absolute ${app.isMaximised || isMobile ? 'top-0 left-0 w-full h-full rounded-none' : `top-10 left-1/2 -translate-x-1/2 md:translate-x-0 ${isCalculator ? 'md:left-[35%] w-[340px] h-[520px]' : 'md:left-[20%] w-[90vw] md:w-[700px] h-[60vh] md:h-[450px]'} rounded-xl`} bg-[#1e1e1e] shadow-[0_20px_60px_rgba(0,0,0,0.5)] border border-white/10 flex flex-col overflow-hidden pointer-events-auto`}
     >
       {/* Title Bar */}
       <div 
         className={`bg-[#2d2d2d] flex items-center justify-between px-4 select-none border-b border-black/50 ${isMobile ? 'h-12' : 'h-10 cursor-grab active:cursor-grabbing'}`}
         onDoubleClick={onMaximise}
-        onPointerDown={(e) => {
-          if (!isMobile) {
-            dragControls.start(e);
-          }
-        }}
+        onPointerDown={onTitlePointerDown}
       >
         <div className="flex items-center gap-3">
-          {/* macOS / GNOME style buttons */}
           <div className="flex items-center gap-1.5">
             <button onClick={onClose} className="w-4 h-4 rounded-full bg-[#ff5f56] flex items-center justify-center hover:bg-[#ff5f56]/80 group transition-colors shadow-sm">
               <img src="/linux-icons/actions/16/window-close-symbolic.svg" alt="close" className="w-2.5 h-2.5 opacity-0 group-hover:opacity-100 transition-opacity brightness-0 invert" />
@@ -541,13 +562,12 @@ const Window = ({
         <div className="absolute left-1/2 -translate-x-1/2 text-white/50 text-[13px] font-medium tracking-wide">
           {app.title}
         </div>
-        <div className="w-10" /> {/* Spacer */}
+        <div className="w-10" />
       </div>
-      {/* Body */}
       <div className="flex-1 overflow-hidden relative">
         {content}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -579,11 +599,9 @@ const QuickSettings = ({
   };
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
-      className="absolute top-10 right-2 w-[calc(100vw-1rem)] max-w-[340px] bg-[#1e1e1e]/95 backdrop-blur-3xl rounded-[24px] shadow-2xl border border-white/10 p-4 z-[130]"
+    <div
+      style={{ animation: 'popoverIn 0.15s ease-out forwards' }}
+      className="absolute top-10 right-2 w-[calc(100vw-1rem)] max-w-[340px] bg-[#1e1e1e]/95 backdrop-blur-3xl -webkit-backdrop-filter-blur-3xl rounded-[24px] shadow-2xl border border-white/10 p-4 z-[130]"
       onClick={e => e.stopPropagation()}
     >
       <div className="flex items-center justify-between mb-4 px-2">
@@ -685,7 +703,7 @@ const QuickSettings = ({
           <span className="text-[13px] font-medium">Airplane Mode</span>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -710,11 +728,9 @@ const AppDrawer = ({ show, onClose, onOpenApp }: { show: boolean; onClose: () =>
   ];
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-      animate={{ opacity: 1, backdropFilter: 'blur(40px)' }}
-      exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-      className="absolute inset-0 z-[110] bg-black/40 flex flex-col items-center pt-16 md:pt-24 pb-24 md:pb-32 px-4 md:px-10"
+    <div
+      style={{ animation: 'popoverIn 0.2s ease-out forwards' }}
+      className="absolute inset-0 z-[110] bg-black/50 backdrop-blur-xl flex flex-col items-center pt-16 md:pt-24 pb-24 md:pb-32 px-4 md:px-10"
       onClick={onClose}
     >
       <div className="w-full max-w-2xl bg-white/10 rounded-full flex items-center px-4 md:px-6 py-2.5 md:py-3 mb-10 md:mb-16 shadow-2xl border border-white/10" onClick={e => e.stopPropagation()}>
@@ -737,7 +753,7 @@ const AppDrawer = ({ show, onClose, onOpenApp }: { show: boolean; onClose: () =>
           </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -750,10 +766,8 @@ const CalendarPopover = ({ show, time }: { show: boolean, time: Date }) => {
   const dayStr = time.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
   return (
-    <motion.div 
-      initial={{ opacity: 0, y: -10, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+    <div
+      style={{ animation: 'popoverIn 0.15s ease-out forwards' }}
       className="absolute top-10 left-1/2 -translate-x-1/2 w-[calc(100vw-1rem)] md:w-[680px] bg-[#1e1e1e]/95 backdrop-blur-3xl rounded-[24px] shadow-2xl border border-white/10 p-4 z-[130] flex flex-col md:flex-row gap-4 h-[70vh] md:h-[420px] overflow-hidden"
       onClick={e => e.stopPropagation()}
     >
@@ -841,18 +855,18 @@ const CalendarPopover = ({ show, time }: { show: boolean, time: Date }) => {
           </div>
         </div>
 
-        {/* Events Block */}
+        {/* Events Block — */}
         <div className="bg-white/5 rounded-2xl p-4 border border-white/5 mb-2">
           <p className="text-white/80 text-sm font-medium mb-1">Today</p>
           <p className="text-white/40 text-sm italic">No Events</p>
         </div>
 
-        {/* World Clocks */}
+        {/* World Clocks — */}
         <div className="bg-white/5 rounded-2xl p-3 border border-white/5 cursor-pointer hover:bg-white/10 transition-colors">
           <p className="text-white/80 text-sm font-medium">Add world clocks...</p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -1040,51 +1054,41 @@ export const LinuxEnvironment: React.FC = () => {
       </div>
 
       {/* Calendar & Notifications Dropdown */}
-      <AnimatePresence>
-        {showCalendar && (
-          <CalendarPopover show={showCalendar} time={time} />
-        )}
-      </AnimatePresence>
+      {showCalendar && <CalendarPopover show={showCalendar} time={time} />}
 
-      {/* Quick Settings Dropdown */}
-      <AnimatePresence>
-        {showQuickSettings && (
-          <QuickSettings 
-            show={showQuickSettings} 
-            brightness={brightness} setBrightness={setBrightness}
-            volume={volume} setVolume={setVolume}
-            wifiEnabled={wifiEnabled} setWifiEnabled={setWifiEnabled}
-            bluetoothEnabled={bluetoothEnabled} setBluetoothEnabled={setBluetoothEnabled}
-            powerMode={powerMode} setPowerMode={setPowerMode}
-            nightLight={nightLight} setNightLight={setNightLight}
-            darkStyle={darkStyle} setDarkStyle={setDarkStyle}
-            airplaneMode={airplaneMode} setAirplaneMode={setAirplaneMode}
-          />
-        )}
-      </AnimatePresence>
+      {/* Quick Settings Dropdown — */}
+      {showQuickSettings && (
+        <QuickSettings 
+          show={showQuickSettings} 
+          brightness={brightness} setBrightness={setBrightness}
+          volume={volume} setVolume={setVolume}
+          wifiEnabled={wifiEnabled} setWifiEnabled={setWifiEnabled}
+          bluetoothEnabled={bluetoothEnabled} setBluetoothEnabled={setBluetoothEnabled}
+          powerMode={powerMode} setPowerMode={setPowerMode}
+          nightLight={nightLight} setNightLight={setNightLight}
+          darkStyle={darkStyle} setDarkStyle={setDarkStyle}
+          airplaneMode={airplaneMode} setAirplaneMode={setAirplaneMode}
+        />
+      )}
 
-      {/* App Drawer */}
-      <AnimatePresence>
-        {showAppDrawer && <AppDrawer show={showAppDrawer} onClose={() => setShowAppDrawer(false)} onOpenApp={openApp} />}
-      </AnimatePresence>
+      {/* App Drawer — */}
+      {showAppDrawer && <AppDrawer show={showAppDrawer} onClose={() => setShowAppDrawer(false)} onOpenApp={openApp} />}
 
       {/* — Windows Area — */}
       <div ref={desktopRef} className="absolute top-9 md:top-7 left-0 right-0 bottom-0 pointer-events-none z-[80]">
-        <AnimatePresence>
-          {apps.map(app => (
-            <Window 
-              key={app.id} 
-              app={app} 
-              constraintsRef={desktopRef}
-              isMobile={isMobile}
-              onClose={() => closeApp(app.id)} 
-              onMinimise={() => minimiseApp(app.id)} 
-              onMaximise={() => maximiseApp(app.id)}
-              onFocus={() => focusApp(app.id)}
-              content={getAppContent(app.id)}
-            />
-          ))}
-        </AnimatePresence>
+        {apps.map(app => (
+          <Window 
+            key={app.id} 
+            app={app} 
+            constraintsRef={desktopRef}
+            isMobile={isMobile}
+            onClose={() => closeApp(app.id)} 
+            onMinimise={() => minimiseApp(app.id)} 
+            onMaximise={() => maximiseApp(app.id)}
+            onFocus={() => focusApp(app.id)}
+            content={getAppContent(app.id)}
+          />
+        ))}
       </div>
 
       {/* — GNOME Dock — */}
@@ -1109,7 +1113,7 @@ export const LinuxEnvironment: React.FC = () => {
               <div className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all cursor-pointer ${isFocused ? 'bg-white/15 shadow-inner' : 'hover:bg-white/10'}`}>
                 <img src={item.icon} alt={item.label} className="w-7 h-7 md:w-8 md:h-8 object-contain drop-shadow-md" />
               </div>
-              {/* Running indicator */}
+              {/* Running indicator — */}
               {isRunning && (
                 <div className="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full bg-white/80" />
               )}
@@ -1117,10 +1121,10 @@ export const LinuxEnvironment: React.FC = () => {
           )
         })}
         
-        {/* Divider */}
+        {/* Divider — */}
         <div className="w-[1px] h-8 bg-white/20 mx-1" />
         
-        {/* Show Apps Button */}
+        {/* Show Apps Button — */}
         <div 
           onClick={() => setShowAppDrawer(!showAppDrawer)}
           className={`w-11 h-11 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-all cursor-pointer ${showAppDrawer ? 'bg-white/20 shadow-inner' : 'hover:bg-white/10'} group relative`}
